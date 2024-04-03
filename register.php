@@ -37,4 +37,9 @@ if(isset($_POST['register']))
     $confirm_password=$_POST['confirm_password'];
     $insert="insert into users (u_name,u_email,u_password) values ('$username','$email','$password')";
     $con->query($insert);
+    ?>
+    <script>
+        window.location.href="login.php";
+    </script>
+    <?php
 }

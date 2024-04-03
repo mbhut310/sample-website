@@ -3,6 +3,7 @@ $url = $_SERVER['REQUEST_URI'];
 $arr_url = explode("/", $url);
 $con=new mysqli("localhost","root","","sample");
 session_start();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

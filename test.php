@@ -1,77 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Slide Navigation</title>
-<style>
-    /* Styling for navigation */
-    nav {
-        background-color: #333;
-        color: white;
-        padding: 10px;
+<?php
+// Database connection
+$servername = "localhost";
+$username = "username";
+$password = "password";
+$dbname = "your_database";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Function to generate OTP
+function generateOTP() {
+    return str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+}
+
+// Function to insert OTP into database
+function storeOTP($otp, $conn) {
+    $timestamp = time();
+    $sql = "INSERT INTO otp_table (otp, created_at) VALUES ('$otp', '$timestamp')";
+    if ($conn->query($sql) === TRUE) {
+        echo "OTP stored successfully.";
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
     }
-    nav ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
+}
+
+// Function to verify OTP
+function verifyOTP($otp, $conn) {
+    $timestamp = time() - 60; // 1 minute ago
+    $sql = "SELECT * FROM otp_table WHERE otp='$otp' AND created_at > $timestamp";
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        // OTP found and is valid
+        return true;
+    } else {
+        // OTP not found or expired
+        return false;
     }
-    nav ul li {
-        display: inline-block;
-        margin-right: 10px;
-        cursor: pointer;
-    }
-    nav ul li.active {
-        color: red; /* Change color of active nav item */
-    }
+}
 
-    /* Styling for content div */
-    .content {
-        display: none;
-        padding: 20px;
-    }
-    .content.active {
-        display: block; /* Display active content */
-    }
-</style>
-</head>
-<body>
+// Generate OTP
+$otp = generateOTP();
 
-<nav>
-    <ul>
-        <li onclick="showContent(1)">Option 1</li>
-        <li onclick="showContent(2)">Option 2</li>
-        <li onclick="showContent(3)">Option 3</li>
-    </ul>
-</nav>
+// Store OTP in database
+storeOTP($otp, $conn);
 
-<div class="content" id="content1">Content for Option 1</div>
-<div class="content" id="content2">Content for Option 2</div>
-<div class="content" id="content3">Content for Option 3</div>
+// Wait for 1 minute
+sleep(60);
 
-<script>
-    function showContent(contentNumber) {
-        // Hide all content divs
-        var contents = document.getElementsByClassName('content');
-        for (var i = 0; i < contents.length; i++) {
-            contents[i].classList.remove('active');
-        }
+// Verify OTP
+if (verifyOTP($otp, $conn)) {
+    echo "OTP is valid.";
+} else {
+    echo "OTP is invalid or expired.";
+}
 
-        // Display the selected content div
-        var selectedContent = document.getElementById('content' + contentNumber);
-        selectedContent.classList.add('active');
-
-        // Remove 'active' class from all nav items
-        var navItems = document.querySelectorAll('nav ul li');
-        navItems.forEach(function(item) {
-            item.classList.remove('active');
-        });
-
-        // Add 'active' class to the clicked nav item
-        var clickedNavItem = document.querySelector('nav ul li:nth-child(' + contentNumber + ')');
-        clickedNavItem.classList.add('active');
-    }
-</script>
-
-</body>
-</html>
+// Close database connection
+$conn->close();
+?>

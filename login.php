@@ -1,11 +1,8 @@
 <?php
 include_once("guest_header.php");
 ?>
-<br>
-
 <div class="container-fluid w-50 ">
     <div class="row d-flex align-center">
-        <!-- <div class=col-lg-3></div> -->
         <div class="col">
             <h2>Login Form</h2>
             <form method="post" action="login.php">
@@ -23,6 +20,9 @@ include_once("guest_header.php");
                     </label>
                 </div>
                 <button type="submit" class="btn btn-primary" name="login">Submit</button>
+                <div class="form-group form-check">
+                        <a href="forget_password.php">Forget Password</a>
+                </div>
             </form>
         </div>
     </div>
